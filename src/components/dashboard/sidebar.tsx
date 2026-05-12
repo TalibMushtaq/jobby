@@ -35,17 +35,17 @@ export function DashboardSidebar({ user, showClerkUserButton }: SidebarProps) {
   const initials = (user.fullName || user.email).slice(0, 2).toUpperCase();
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 flex-col border-r border-zinc-200 bg-white/90 p-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 lg:flex">
+    <aside className="sticky top-0 hidden h-screen w-72 flex-col border-r border-border bg-card p-4 backdrop-blur lg:flex">
       <Link
         href="/dashboard"
-        className="mb-6 flex items-center gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+        className="mb-6 flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted"
       >
-        <div className="rounded-md bg-sky-600 p-2 text-white">
+        <div className="rounded-md bg-primary p-2 text-primary-foreground">
           <BarChart3 className="h-5 w-5" />
         </div>
         <div>
-          <p className="font-semibold leading-tight">Jobby</p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="font-semibold leading-tight text-foreground">Jobby</p>
+          <p className="text-xs text-muted-foreground">
             Hiring Intelligence
           </p>
         </div>
@@ -63,8 +63,8 @@ export function DashboardSidebar({ user, showClerkUserButton }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 active
-                  ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-200"
-                  : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900",
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -73,17 +73,17 @@ export function DashboardSidebar({ user, showClerkUserButton }: SidebarProps) {
           );
         })}
       </nav>
-      <div className="mt-auto space-y-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
+      <div className="mt-auto space-y-3 rounded-lg border border-border p-3">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.avatarUrl ?? undefined} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">
+            <p className="truncate text-sm font-medium text-foreground">
               {user.fullName || "Jobby User"}
             </p>
-            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="truncate text-xs text-muted-foreground">
               {user.email}
             </p>
           </div>

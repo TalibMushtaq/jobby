@@ -39,7 +39,7 @@ export default async function DashboardPage() {
             <CardDescription>ATS Match Score</CardDescription>
             <CardTitle className="text-3xl">{latestAnalysis?.atsScore ?? "--"}</CardTitle>
           </CardHeader>
-          <CardContent className="text-xs text-zinc-500 dark:text-zinc-400">
+          <CardContent className="text-xs text-muted-foreground">
             Weighted by skills, keywords, experience, and education.
           </CardContent>
         </Card>
@@ -50,7 +50,7 @@ export default async function DashboardPage() {
               {latestAnalysis?.interviewProbability ?? "--"}
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-xs text-zinc-500 dark:text-zinc-400">
+          <CardContent className="text-xs text-muted-foreground">
             Computed from ATS strength, relevance, and resume completeness.
           </CardContent>
         </Card>
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
         <Card className="xl:col-span-2">
           <CardHeader>
             <CardTitle className="inline-flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-sky-500" />
+              <Sparkles className="h-4 w-4 text-primary" />
               Quick Analysis
             </CardTitle>
             <CardDescription>
@@ -91,11 +91,11 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             {resumes.length === 0 ? (
-              <div className="space-y-3 rounded-lg border border-dashed border-zinc-300 p-4 text-sm dark:border-zinc-700">
-                <p>Upload a resume once, then run repeated analyses instantly.</p>
+              <div className="space-y-3 rounded-lg border border-dashed border-border p-4 text-sm">
+                <p className="text-muted-foreground">Upload a resume once, then run repeated analyses instantly.</p>
                 <Link
                   href="/dashboard/resumes"
-                  className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-500"
+                  className="inline-flex items-center gap-2 text-primary hover:opacity-80"
                 >
                   Go to Resume Library <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                     id="resumeId"
                     name="resumeId"
                     defaultValue={defaultResume?.id}
-                    className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground"
                   >
                     {resumes.map((resume) => (
                       <option key={resume.id} value={resume.id}>
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
                     id="jobTitle"
                     name="jobTitle"
                     placeholder="Senior Frontend Engineer"
-                    className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                    className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
         <Card className="xl:col-span-3">
           <CardHeader>
             <CardTitle className="inline-flex items-center gap-2">
-              <Target className="h-4 w-4 text-sky-500" />
+              <Target className="h-4 w-4 text-primary" />
               Latest Explainability Signals
             </CardTitle>
             <CardDescription>
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
               <>
                 {latestAnalysis.missingSkills.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs uppercase tracking-wide text-zinc-500">Missing skills</p>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Missing skills</p>
                     <div className="flex flex-wrap gap-2">
                       {latestAnalysis.missingSkills.slice(0, 8).map((skill) => (
                         <Badge key={skill} variant="warning">
@@ -169,7 +169,7 @@ export default async function DashboardPage() {
                   </div>
                 ) : null}
                 <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-zinc-500">Matched keywords</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Matched keywords</p>
                   <div className="flex flex-wrap gap-2">
                     {latestAnalysis.keywordMatches.slice(0, 8).map((keyword) => (
                       <Badge key={keyword} variant="success">
@@ -178,8 +178,8 @@ export default async function DashboardPage() {
                     ))}
                   </div>
                 </div>
-                <div className="rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
-                  <p className="mb-2 font-medium">Scam/Ghost snapshot</p>
+                <div className="rounded-lg border border-border p-4 text-sm">
+                  <p className="mb-2 font-medium text-foreground">Scam/Ghost snapshot</p>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="danger">Scam {latestAnalysis.scamRiskScore}%</Badge>
                     <Badge variant="warning">Ghost {latestAnalysis.ghostJobRiskScore}%</Badge>
@@ -190,13 +190,13 @@ export default async function DashboardPage() {
                 </div>
                 <Link
                   href={`/dashboard/analysis/${latestAnalysis.id}`}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-500"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"
                 >
                   Open full explainability report <ArrowRight className="h-4 w-4" />
                 </Link>
               </>
             ) : (
-              <div className="rounded-lg border border-dashed border-zinc-300 p-5 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+              <div className="rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
                 No analysis history yet. Run your first quick analysis to generate
                 ATS trend and explainability insights.
               </div>
@@ -215,7 +215,7 @@ export default async function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle className="inline-flex items-center gap-2">
-            <FileText className="h-4 w-4 text-sky-500" />
+            <FileText className="h-4 w-4 text-primary" />
             Recent Analyses
           </CardTitle>
         </CardHeader>
@@ -226,26 +226,26 @@ export default async function DashboardPage() {
                 <Link
                   key={analysis.id}
                   href={`/dashboard/analysis/${analysis.id}`}
-                  className="flex items-center justify-between rounded-md border border-zinc-200 p-3 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                  className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted"
                 >
                   <div>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium text-foreground">
                       {analysis.jobTitle || "Untitled role analysis"}
                     </p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <p className="text-xs text-muted-foreground">
                       Resume: {analysis.resume.title}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Badge>{analysis.atsScore}</Badge>
                     <Badge variant="secondary">{analysis.interviewProbability}</Badge>
-                    <ShieldAlert className="h-4 w-4 text-zinc-400" />
+                    <ShieldAlert className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               Analysis history appears here once you run an evaluation.
             </p>
           )}
