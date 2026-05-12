@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jobby
 
-## Getting Started
+Jobby is a production-style AI hiring intelligence platform built with Next.js App Router, Clerk auth, Prisma/PostgreSQL, UploadThing storage, deterministic NLP scoring, and OpenRouter free-model reasoning.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind
+- shadcn-style UI primitives + lucide-react + recharts
+- Clerk authentication
+- Prisma ORM + PostgreSQL (Neon/Supabase compatible)
+- UploadThing storage for resume files
+- OpenRouter (`openai/gpt-oss-20b:free`)
+- NLP libraries: `natural`, `compromise`, `pdf-parse`, `mammoth`
+
+## Features
+
+- Secure sign-up/sign-in/sign-out and protected dashboard routes
+- Profile system (name, skills, education, experience, preferred roles)
+- Resume library with PDF/DOCX upload, extracted text persistence, and default resume
+- One-click quick analysis using default resume
+- Deterministic ATS scoring + interview probability + scam/ghost risk heuristics
+- OpenRouter AI reasoning and optimized resume generation
+- Analysis history with trend charts and explainability panel
+- Export analysis report JSON and copy/download optimized output
+
+## Required Environment Variables
+
+Copy `.env.example` to `.env` and fill values:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `DATABASE_URL`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `CLERK_WEBHOOK_SIGNING_SECRET`
+- `UPLOADTHING_TOKEN`
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL` (default: `openai/gpt-oss-20b:free`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm install
+pnpm db:generate
+pnpm db:push
+pnpm dev
+```
 
-## Learn More
+Open `http://localhost:3000`.
 
-To learn more about Next.js, take a look at the following resources:
+## Clerk Webhook Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. In Clerk Dashboard, add an endpoint:
+   - Local: `http://localhost:3000/api/webhooks/clerk`
+   - Production: `https://your-domain.com/api/webhooks/clerk`
+2. Subscribe to:
+   - `user.created`
+   - `user.updated`
+   - `user.deleted`
+3. Copy the endpoint signing secret (`whsec_...`) into `CLERK_WEBHOOK_SIGNING_SECRET`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Prisma Models
 
-## Deploy on Vercel
+- `User`
+- `Resume`
+- `Analysis`
+- `OptimizedResume`
+- `AiRequestLog` (AI rate limiting window tracking)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The core scoring pipeline is deterministic first (TF-IDF/keyword overlap/similarity/rule-based risk), then AI adds explanation and resume optimization.
+- UploadThing handles secure storage; extracted text and all scores are stored in PostgreSQL.

@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExperienceLevel {
+  INTERN
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum InterviewProbability {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id                String          @id @default(cuid())
+  clerkId           String          @unique
+  email             String          @unique
+  fullName          String?
+  avatarUrl         String?
+  skills            String[]        @default([])
+  education         String?
+  experienceLevel   ExperienceLevel?
+  preferredJobRoles String[]        @default([])
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  resumes           Resume[]
+  analyses          Analysis[]
+  optimizedResumes  OptimizedResume[]
+  aiRequestLogs     AiRequestLog[]
+}
+
+model Resume {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  fileUrl          String
+  fileKey          String            @unique
+  fileType         String
+  extractedText    String            @db.Text
+  parsedSkills     String[]          @default([])
+  isDefault        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  analyses         Analysis[]
+  optimizedResumes OptimizedResume[]
+
+  @@index([userId, createdAt])
+}
+
+model Analysis {
+  id                    String               @id @default(cuid())
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeId              String
+  resume                Resume               @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobDescription        String               @db.Text
+  jobTitle              String?
+  atsScore              Int
+  interviewProbability  InterviewProbability
+  scamRisk              RiskLevel
+  scamRiskScore         Int
+  ghostJobRisk          RiskLevel
+  ghostJobRiskScore     Int
+  resumeQualityScore    Int
+  skillMatchScore       Int
+  keywordCoverageScore  Int
+  experienceMatchScore  Int
+  educationMatchScore   Int
+  semanticSimilarity    Float
+  keywordMatches        String[]             @default([])
+  missingSkills         String[]             @default([])
+  suggestions           String[]             @default([])
+  explainability        Json
+  aiReasoning           Json?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  optimizedResumes      OptimizedResume[]
+
+  @@index([userId, createdAt])
+  @@index([resumeId, createdAt])
+}
+
+model OptimizedResume {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeId   String
+  resume     Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  analysisId String
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  content    String   @db.Text
+  version    Int      @default(1)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([analysisId, createdAt])
+}
+
+model AiRequestLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String
+  createdAt DateTime @default(now())
+
+  @@index([userId, endpoint, createdAt])
+}
