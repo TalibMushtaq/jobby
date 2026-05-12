@@ -1,5 +1,6 @@
 "use server";
 
+import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -16,7 +17,7 @@ export async function setDefaultResumeAction(formData: FormData) {
     resumeId: String(formData.get("resumeId") ?? ""),
   });
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.resume.updateMany({
       where: { userId: user.id },
       data: { isDefault: false },
