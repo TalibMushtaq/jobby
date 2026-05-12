@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -14,7 +15,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.3",
-    "@prisma/client": "^6.16.2",
+    "@prisma/adapter-pg": "7.8.0",
+    "@prisma/client": "7.8.0",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.8",
@@ -31,6 +33,7 @@
     "mammoth": "^1.12.0",
     "natural": "^8.1.1",
     "next": "15.5.9",
+    "pg": "^8.16.3",
     "pdf-parse": "^2.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -48,8 +51,12 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.9",
-    "prisma": "^6.16.2",
+    "prisma": "7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@prisma/client": "7.8.0",
+    "prisma": "7.8.0"
   }
 }

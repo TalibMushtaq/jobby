@@ -138,7 +138,7 @@ export default async function AnalysisDetailPage({ params }: AnalysisDetailPageP
               <div>
                 <p className="mb-2 text-xs uppercase tracking-wide text-zinc-500">Matched keywords</p>
                 <div className="flex flex-wrap gap-2">
-                  {analysis.keywordMatches.slice(0, 12).map((keyword) => (
+                  {analysis.keywordMatches.slice(0, 12).map((keyword: string) => (
                     <Badge key={keyword} variant="success">
                       {keyword}
                     </Badge>
@@ -148,7 +148,7 @@ export default async function AnalysisDetailPage({ params }: AnalysisDetailPageP
               <div>
                 <p className="mb-2 text-xs uppercase tracking-wide text-zinc-500">Skill gaps</p>
                 <div className="flex flex-wrap gap-2">
-                  {analysis.missingSkills.slice(0, 12).map((skill) => (
+                  {analysis.missingSkills.slice(0, 12).map((skill: string) => (
                     <Badge key={skill} variant="warning">
                       {skill}
                     </Badge>
@@ -263,7 +263,7 @@ export default async function AnalysisDetailPage({ params }: AnalysisDetailPageP
           <div>
             <p className="mb-2 text-sm font-medium">Personalized suggestions</p>
             <ul className="list-disc space-y-1 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
-              {analysis.suggestions.map((suggestion, index) => (
+              {analysis.suggestions.map((suggestion: string, index) => (
                 <li key={`${analysis.id}-suggestion-${index}`}>{suggestion}</li>
               ))}
             </ul>
