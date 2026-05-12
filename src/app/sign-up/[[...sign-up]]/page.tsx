@@ -28,7 +28,7 @@ export default function SignUpPage() {
 
       {/* Sign Up Form */}
       <div className="flex flex-1 items-center justify-center p-6">
-        <SignUp />
+        <SignUp fallbackRedirectUrl="/dashboard" signInUrl="/sign-in" />
       </div>
     </main>
   );

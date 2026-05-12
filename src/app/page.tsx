@@ -40,10 +40,10 @@ export default function Home() {
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/sign-up"
+              href="/sign-in"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition-all hover:opacity-90"
             >
-              Get Started Free
+              Get Started for Free
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
