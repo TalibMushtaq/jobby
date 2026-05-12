@@ -3,6 +3,7 @@ import { UserButton } from "@clerk/nextjs";
 import { BarChart3 } from "lucide-react";
 
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { isDevAuthBypass } from "@/lib/auth-mode";
 import { requireDbUser } from "@/lib/auth";
 
@@ -14,7 +15,7 @@ export default async function DashboardLayout({
   const user = await requireDbUser();
 
   return (
-    <div className="dashboard-gradient flex min-h-screen">
+    <div className="flex min-h-screen bg-background">
       <DashboardSidebar
         user={{
           fullName: user.fullName,
@@ -24,19 +25,22 @@ export default async function DashboardLayout({
         showClerkUserButton={!isDevAuthBypass}
       />
       <div className="flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 lg:hidden">
+        <header className="sticky top-0 z-20 border-b border-border bg-card/80 px-4 py-3 backdrop-blur lg:hidden">
           <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-semibold">
-              <BarChart3 className="h-4 w-4 text-sky-500" />
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+              <BarChart3 className="h-4 w-4 text-primary" />
               Jobby
             </Link>
-            {isDevAuthBypass ? (
-              <span className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-                Dev auth
-              </span>
-            ) : (
-              <UserButton />
-            )}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              {isDevAuthBypass ? (
+                <span className="rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                  Dev auth
+                </span>
+              ) : (
+                <UserButton />
+              )}
+            </div>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>

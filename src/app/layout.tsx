@@ -36,7 +36,7 @@ export default function RootLayout({
           DEV_AUTH_BYPASS for production-like auth flow.
         </div>
       ) : null}
-      <div className="flex min-h-full flex-col">{children}</div>
+      <div className="flex min-h-full flex-col bg-background">{children}</div>
       <Toaster position="top-right" richColors closeButton />
     </>
   );
@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+      <body className="min-h-full bg-background text-foreground">
         {isDevAuthBypass ? content : <ClerkProvider>{content}</ClerkProvider>}
       </body>
     </html>

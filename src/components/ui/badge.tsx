@@ -9,11 +9,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300",
+          "border-primary/30 bg-primary/10 text-primary",
         secondary:
-          "border-zinc-200 bg-zinc-100 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300",
+          "border-border bg-muted text-foreground",
         success:
-          "border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300",
+          "border-success/30 bg-success/10 text-success",
         warning:
           "border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300",
         danger:
