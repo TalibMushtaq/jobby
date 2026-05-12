@@ -1,6 +1,5 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -11,13 +10,18 @@ const resumeIdSchema = z.object({
   resumeId: z.string().min(1),
 });
 
+type TransactionClient = Omit<
+  typeof prisma,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends"
+>;
+
 export async function setDefaultResumeAction(formData: FormData) {
   const user = await requireDbUser();
   const { resumeId } = resumeIdSchema.parse({
     resumeId: String(formData.get("resumeId") ?? ""),
   });
 
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  await prisma.$transaction(async (tx: TransactionClient) => {
     await tx.resume.updateMany({
       where: { userId: user.id },
       data: { isDefault: false },
