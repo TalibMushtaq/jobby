@@ -18,7 +18,16 @@ export default async function AnalysisHistoryPage() {
   const analyses = await prisma.analysis.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      jobTitle: true,
+      atsScore: true,
+      interviewProbability: true,
+      scamRisk: true,
+      scamRiskScore: true,
+      ghostJobRisk: true,
+      ghostJobRiskScore: true,
+      createdAt: true,
       resume: {
         select: { title: true },
       },

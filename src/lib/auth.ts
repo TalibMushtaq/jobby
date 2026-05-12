@@ -1,24 +1,22 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { ExperienceLevel } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 import { isDevAuthBypass } from "@/lib/auth-mode";
+import {
+  DEFAULT_EXPERIENCE_LEVEL,
+  isExperienceLevel,
+  type ExperienceLevelValue,
+} from "@/lib/experience-level";
 import { prisma } from "@/lib/prisma";
 
-const mapExperienceLevel = (value?: string | null): ExperienceLevel | null => {
+const mapExperienceLevel = (value?: string | null): ExperienceLevelValue | null => {
   if (!value) {
     return null;
   }
 
   const normalized = value.toUpperCase();
-  if (
-    normalized === "INTERN" ||
-    normalized === "JUNIOR" ||
-    normalized === "MID" ||
-    normalized === "SENIOR" ||
-    normalized === "LEAD"
-  ) {
-    return normalized as ExperienceLevel;
+  if (isExperienceLevel(normalized)) {
+    return normalized;
   }
 
   return null;
@@ -37,7 +35,7 @@ export async function syncCurrentUser() {
         clerkId: "dev-local-user",
         email: "dev@local.jobby",
         fullName: "Local Dev User",
-        experienceLevel: ExperienceLevel.MID,
+        experienceLevel: DEFAULT_EXPERIENCE_LEVEL,
       },
     });
   }

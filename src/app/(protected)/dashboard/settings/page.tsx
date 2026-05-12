@@ -1,5 +1,3 @@
-import { ExperienceLevel } from "@prisma/client";
-
 import { updateProfileAction } from "@/actions/profile";
 import { SubmitButton } from "@/components/form/submit-button";
 import {
@@ -12,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DEFAULT_EXPERIENCE_LEVEL, EXPERIENCE_LEVELS } from "@/lib/experience-level";
 import { requireDbUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -53,10 +52,10 @@ export default async function SettingsPage() {
                 <select
                   id="experienceLevel"
                   name="experienceLevel"
-                  defaultValue={user.experienceLevel ?? ExperienceLevel.MID}
+                  defaultValue={user.experienceLevel ?? DEFAULT_EXPERIENCE_LEVEL}
                   className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-950"
                 >
-                  {Object.values(ExperienceLevel).map((level) => (
+                  {EXPERIENCE_LEVELS.map((level) => (
                     <option key={level} value={level}>
                       {level}
                     </option>

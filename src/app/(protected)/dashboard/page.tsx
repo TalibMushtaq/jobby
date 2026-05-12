@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, FileText, ShieldAlert, Sparkles, Target } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Circle,
+  FileText,
+  ShieldAlert,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 
 import { runQuickAnalysisAction } from "@/actions/analysis";
 import { SubmitButton } from "@/components/form/submit-button";
@@ -30,9 +38,118 @@ export default async function DashboardPage() {
     skillRadarData,
   } = await getDashboardData(user.id);
   const defaultResume = resumes.find((resume) => resume.isDefault) ?? resumes[0];
+  const isProfileComplete =
+    Boolean(user.fullName?.trim()) &&
+    Boolean(user.education?.trim()) &&
+    Boolean(user.experienceLevel) &&
+    user.skills.length > 0 &&
+    user.preferredJobRoles.length > 0;
+  const hasResume = resumes.length > 0;
+  const hasAnalysis = analyses.length > 0;
+  const completedSteps = [
+    isProfileComplete,
+    hasResume,
+    hasAnalysis,
+    hasAnalysis,
+  ].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="inline-flex items-center gap-2">
+            <UserRound className="h-4 w-4 text-primary" />
+            Guided Setup Flow
+          </CardTitle>
+          <CardDescription>
+            Login → Complete profile details → Upload resume → Evaluate job details
+            → Create custom resume.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            {completedSteps}/4 steps completed
+          </p>
+          <div className="grid gap-2 md:grid-cols-2">
+            {[
+              {
+                label: "Complete profile details",
+                done: isProfileComplete,
+                href: "/dashboard/settings",
+              },
+              {
+                label: "Upload resume",
+                done: hasResume,
+                href: "/dashboard/resumes",
+              },
+              {
+                label: "Evaluate job details",
+                done: hasAnalysis,
+                href: "#evaluate-job",
+              },
+              {
+                label: "Create custom resume",
+                done: hasAnalysis,
+                href: hasAnalysis
+                  ? `/dashboard/analysis/${latestAnalysis?.id}`
+                  : "#custom-resume",
+              },
+            ].map((step) => (
+              <Link
+                key={step.label}
+                href={step.href}
+                className="inline-flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm transition-colors hover:bg-muted"
+              >
+                <span className="inline-flex items-center gap-2">
+                  {step.done ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  {step.label}
+                </span>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">1. Complete Profile Details</CardTitle>
+            <CardDescription>
+              Add your skills, education, and target roles to improve evaluation quality.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href="/dashboard/settings"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"
+            >
+              Open Profile Settings <ArrowRight className="h-4 w-4" />
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">2. Add Resume</CardTitle>
+            <CardDescription>
+              Upload at least one resume so evaluation can run with your real profile.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href="/dashboard/resumes"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"
+            >
+              Open Resume Library <ArrowRight className="h-4 w-4" />
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
@@ -79,14 +196,14 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-5">
-        <Card className="xl:col-span-2">
+        <Card id="evaluate-job" className="xl:col-span-2">
           <CardHeader>
             <CardTitle className="inline-flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" />
-              Quick Analysis
+              3. Evaluate Job
             </CardTitle>
             <CardDescription>
-              One-click pipeline using your default resume and job description.
+              Add job details to evaluate fit, risk, and interview probability.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -143,19 +260,28 @@ export default async function DashboardPage() {
             )}
           </CardContent>
         </Card>
-        <Card className="xl:col-span-3">
+        <Card id="custom-resume" className="xl:col-span-3">
           <CardHeader>
             <CardTitle className="inline-flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />
-              Latest Explainability Signals
+              <FileText className="h-4 w-4 text-primary" />
+              4. Create Custom Resume
             </CardTitle>
             <CardDescription>
-              Feature contribution view for ATS and risk behavior.
+              Generate and export role-specific optimized resumes after evaluation.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {latestAnalysis ? (
               <>
+                <div className="rounded-lg border border-border p-4 text-sm">
+                  <p className="mb-2 font-medium text-foreground">
+                    Latest evaluated role
+                  </p>
+                  <p className="text-muted-foreground">
+                    {latestAnalysis.jobTitle || "Untitled role analysis"} • ATS{" "}
+                    {latestAnalysis.atsScore}
+                  </p>
+                </div>
                 {latestAnalysis.missingSkills.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Missing skills</p>
@@ -192,13 +318,12 @@ export default async function DashboardPage() {
                   href={`/dashboard/analysis/${latestAnalysis.id}`}
                   className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:opacity-80"
                 >
-                  Open full explainability report <ArrowRight className="h-4 w-4" />
+                  Open custom resume and explainability <ArrowRight className="h-4 w-4" />
                 </Link>
               </>
             ) : (
               <div className="rounded-lg border border-dashed border-border p-5 text-sm text-muted-foreground">
-                No analysis history yet. Run your first quick analysis to generate
-                ATS trend and explainability insights.
+                Run your first job evaluation to unlock custom resume generation.
               </div>
             )}
           </CardContent>

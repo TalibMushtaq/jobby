@@ -1,16 +1,16 @@
 "use server";
 
-import { ExperienceLevel } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { requireDbUser } from "@/lib/auth";
+import { EXPERIENCE_LEVELS } from "@/lib/experience-level";
 import { prisma } from "@/lib/prisma";
 
 const profileSchema = z.object({
   fullName: z.string().min(2).max(120),
   education: z.string().max(240),
-  experienceLevel: z.nativeEnum(ExperienceLevel),
+  experienceLevel: z.enum(EXPERIENCE_LEVELS),
   skills: z.string().max(2000),
   preferredJobRoles: z.string().max(2000),
 });

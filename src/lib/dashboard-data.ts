@@ -19,12 +19,33 @@ export async function getDashboardData(userId: string) {
     prisma.resume.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        isDefault: true,
+      },
     }),
     prisma.analysis.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: 30,
-      include: {
+      select: {
+        id: true,
+        createdAt: true,
+        jobTitle: true,
+        atsScore: true,
+        interviewProbability: true,
+        scamRisk: true,
+        scamRiskScore: true,
+        ghostJobRisk: true,
+        ghostJobRiskScore: true,
+        resumeQualityScore: true,
+        skillMatchScore: true,
+        keywordCoverageScore: true,
+        experienceMatchScore: true,
+        educationMatchScore: true,
+        missingSkills: true,
+        keywordMatches: true,
         resume: {
           select: {
             id: true,

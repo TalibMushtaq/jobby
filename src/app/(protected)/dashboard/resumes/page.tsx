@@ -19,9 +19,15 @@ export default async function ResumeLibraryPage() {
   const resumes = await prisma.resume.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    include: {
-      analyses: {
-        select: { id: true },
+    select: {
+      id: true,
+      title: true,
+      isDefault: true,
+      fileType: true,
+      parsedSkills: true,
+      fileUrl: true,
+      _count: {
+        select: { analyses: true },
       },
     },
   });
@@ -61,7 +67,7 @@ export default async function ResumeLibraryPage() {
                       {resume.isDefault ? <Badge variant="success">Default</Badge> : null}
                     </div>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {resume.fileType} • {resume.analyses.length} analysis runs
+                      {resume.fileType} • {resume._count.analyses} analysis runs
                     </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {resume.parsedSkills.slice(0, 6).map((skill) => (
