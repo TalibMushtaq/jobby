@@ -6,17 +6,17 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
   CLERK_SECRET_KEY: z.string().min(1),
-  CLERK_WEBHOOK_SIGNING_SECRET: z.string().min(1),
+  CLERK_WEBHOOK_SIGNING_SECRET: z.string().min(1).optional(),
   NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1).default("/sign-in"),
   NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().min(1).default("/sign-up"),
   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1).default("/dashboard"),
   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1).default("/dashboard"),
-  OPENROUTER_API_KEY: z.string().min(1),
+  OPENROUTER_API_KEY: z.string().min(1).optional(),
   OPENROUTER_MODEL: z
     .string()
     .min(1)
     .default("openai/gpt-oss-20b:free"),
-  UPLOADTHING_TOKEN: z.string().min(1),
+  UPLOADTHING_TOKEN: z.string().min(1).optional(),
 });
 
 const parsedEnv = envSchema.safeParse({

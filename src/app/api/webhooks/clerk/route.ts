@@ -28,6 +28,13 @@ function resolveFullName(
 }
 
 export async function POST(request: NextRequest) {
+  if (!env.CLERK_WEBHOOK_SIGNING_SECRET) {
+    return NextResponse.json(
+      { error: "CLERK_WEBHOOK_SIGNING_SECRET is not configured." },
+      { status: 500 },
+    );
+  }
+
   let event;
   try {
     event = await verifyWebhook(request, {

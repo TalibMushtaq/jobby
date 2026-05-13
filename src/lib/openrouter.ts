@@ -70,6 +70,15 @@ export async function requestOpenRouterEnhancement(input: {
   jobDescription: string;
   deterministic: DeterministicAnalysis;
 }) {
+  if (!env.OPENROUTER_API_KEY) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "OPENROUTER_API_KEY is not configured. Falling back to deterministic enhancement.",
+      );
+    }
+    return fallbackAiEnhancement(input.deterministic);
+  }
+
   const prompt = `
 You are an AI hiring intelligence analyst.
 Return STRICT JSON only. No markdown.
