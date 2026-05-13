@@ -64,42 +64,51 @@ export async function POST(request: Request) {
       .slice(0, 25)
       .map(toTitleCase);
 
-    const resume = await prisma.$transaction(async (tx) => {
-      if (isDefault) {
-        await tx.resume.updateMany({
-          where: { userId: dbUser.id },
-          data: { isDefault: false },
-        });
-      }
+    const resume = await prisma.$transaction(
+      async (tx) => {
+        if (isDefault) {
+          await tx.resume.updateMany({
+            where: { userId: dbUser.id },
+            data: { isDefault: false },
+          });
+        }
 
-      const createdResume = await tx.resume.create({
-        data: {
-          userId: dbUser.id,
-          title: deriveResumeTitle(payload.fileName),
-          fileKey: payload.fileKey,
-          fileUrl: payload.fileUrl,
-          fileType: payload.fileType,
-          extractedText,
-          parsedSkills,
-          isDefault,
-        },
-      });
-
-      const mergedSkills = [
-        ...new Set([...(dbUser.skills ?? []), ...parsedSkills].map((skill) => skill.trim())),
-      ].filter(Boolean);
-
-      if (mergedSkills.length > dbUser.skills.length) {
-        await tx.user.update({
-          where: { id: dbUser.id },
+        const createdResume = await tx.resume.create({
           data: {
-            skills: mergedSkills.slice(0, 50),
+            userId: dbUser.id,
+            title: deriveResumeTitle(payload.fileName),
+            fileKey: payload.fileKey,
+            fileUrl: payload.fileUrl,
+            fileType: payload.fileType,
+            extractedText,
+            parsedSkills,
+            isDefault,
           },
         });
-      }
 
-      return createdResume;
-    });
+        const mergedSkills = [
+          ...new Set(
+            [...(dbUser.skills ?? []), ...parsedSkills].map((skill) =>
+              skill.trim(),
+            ),
+          ),
+        ].filter(Boolean);
+
+        if (mergedSkills.length > dbUser.skills.length) {
+          await tx.user.update({
+            where: { id: dbUser.id },
+            data: {
+              skills: mergedSkills.slice(0, 50),
+            },
+          });
+        }
+
+        return createdResume;
+      },
+      {
+        timeout: 10000,
+      },
+    );
 
     return NextResponse.json({ resumeId: resume.id });
   } catch (error) {

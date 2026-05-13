@@ -21,24 +21,29 @@ export async function setDefaultResumeAction(formData: FormData) {
     resumeId: String(formData.get("resumeId") ?? ""),
   });
 
-  await prisma.$transaction(async (tx: TransactionClient) => {
-    await tx.resume.updateMany({
-      where: { userId: user.id },
-      data: { isDefault: false },
-    });
+  await prisma.$transaction(
+    async (tx: TransactionClient) => {
+      await tx.resume.updateMany({
+        where: { userId: user.id },
+        data: { isDefault: false },
+      });
 
-    const updatedRows = await tx.resume.updateMany({
-      where: {
-        id: resumeId,
-        userId: user.id,
-      },
-      data: { isDefault: true },
-    });
+      const updatedRows = await tx.resume.updateMany({
+        where: {
+          id: resumeId,
+          userId: user.id,
+        },
+        data: { isDefault: true },
+      });
 
-    if (updatedRows.count === 0) {
-      throw new Error("Resume not found.");
-    }
-  });
+      if (updatedRows.count === 0) {
+        throw new Error("Resume not found.");
+      }
+    },
+    {
+      timeout: 10000,
+    },
+  );
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/resumes");
