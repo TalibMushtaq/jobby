@@ -51,11 +51,13 @@ export async function syncCurrentUser() {
     throw new Error("Authenticated Clerk user could not be loaded.");
   }
 
-  const primaryEmail = clerkUser.emailAddresses.find(
-    (email) => email.id === clerkUser.primaryEmailAddressId,
-  )?.emailAddress;
+  const primaryEmail =
+    clerkUser.emailAddresses.find(
+      (email) => email.id === clerkUser.primaryEmailAddressId,
+    )?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress;
+
   if (!primaryEmail) {
-    throw new Error(`Missing Clerk primary email for user ${userId}.`);
+    throw new Error(`Missing Clerk email for user ${userId}.`);
   }
 
   const fullName =

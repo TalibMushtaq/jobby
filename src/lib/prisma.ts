@@ -1,5 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
+
+import "./env";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -26,8 +29,8 @@ function withStrictPgSslMode(connectionString: string) {
     return connectionString;
   }
 
-  if (sslMode === "prefer" || sslMode === "require" || sslMode === "verify-ca") {
-    url.searchParams.set("sslmode", "verify-full");
+  if (sslMode === "prefer") {
+    url.searchParams.set("sslmode", "require");
     return url.toString();
   }
 
@@ -38,14 +41,17 @@ const connectionString = withStrictPgSslMode(
   process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL ?? "",
 );
 
-const adapter = new PrismaPg({ connectionString });
+const createPrismaClient = () => {
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
+};
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
