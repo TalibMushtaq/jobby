@@ -1,8 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
+  pgPool?: Pool;
 };
 
 function withStrictPgSslMode(connectionString: string) {
@@ -34,9 +36,12 @@ function withStrictPgSslMode(connectionString: string) {
   return connectionString;
 }
 
-const adapter = new PrismaPg({
-  connectionString: withStrictPgSslMode(process.env.DATABASE_URL ?? ""),
-});
+const connectionString = withStrictPgSslMode(
+  process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL ?? "",
+);
+
+const pool = globalForPrisma.pgPool ?? new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 export const prisma =
   globalForPrisma.prisma ??
@@ -47,4 +52,5 @@ export const prisma =
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
+  globalForPrisma.pgPool = pool;
 }

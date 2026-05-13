@@ -3,19 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
+import { syncDbUserFromIdentity } from "@/lib/user-sync";
 
 export const runtime = "nodejs";
 
 function resolvePrimaryEmail(
   emailAddresses: Array<{ id: string; email_address: string }>,
   primaryEmailAddressId: string | null,
-  fallbackUserId: string,
 ) {
+  if (!primaryEmailAddressId) {
+    return null;
+  }
+
   return (
     emailAddresses.find((email) => email.id === primaryEmailAddressId)
-      ?.email_address ??
-    emailAddresses[0]?.email_address ??
-    `${fallbackUserId}@clerk.local`
+      ?.email_address ?? null
   );
 }
 
@@ -63,30 +65,36 @@ export async function POST(request: NextRequest) {
     case "user.created":
     case "user.updated": {
       const clerkUser = event.data;
+      if (!clerkUser.id) {
+        return NextResponse.json(
+          { error: "Missing user id in Clerk webhook payload." },
+          { status: 400 },
+        );
+      }
+
       const primaryEmail = resolvePrimaryEmail(
         clerkUser.email_addresses,
         clerkUser.primary_email_address_id,
-        clerkUser.id,
       );
+      if (!primaryEmail) {
+        return NextResponse.json(
+          { error: "Missing primary email in Clerk webhook payload." },
+          { status: 400 },
+        );
+      }
+
       const fullName = resolveFullName(
         clerkUser.first_name,
         clerkUser.last_name,
         clerkUser.username,
       );
 
-      await prisma.user.upsert({
-        where: { clerkId: clerkUser.id },
-        update: {
-          email: primaryEmail,
-          fullName,
-          avatarUrl: clerkUser.image_url ?? null,
-        },
-        create: {
-          clerkId: clerkUser.id,
-          email: primaryEmail,
-          fullName,
-          avatarUrl: clerkUser.image_url ?? null,
-        },
+      await syncDbUserFromIdentity({
+        clerkId: clerkUser.id,
+        email: primaryEmail,
+        fullName,
+        avatarUrl: clerkUser.image_url ?? null,
+        source: "webhook",
       });
 
       return NextResponse.json({ received: true, event: event.type }, { status: 200 });

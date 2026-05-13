@@ -8,6 +8,7 @@ import {
   type ExperienceLevelValue,
 } from "@/lib/experience-level";
 import { prisma } from "@/lib/prisma";
+import { syncDbUserFromIdentity } from "@/lib/user-sync";
 
 const mapExperienceLevel = (value?: string | null): ExperienceLevelValue | null => {
   if (!value) {
@@ -46,34 +47,31 @@ export async function syncCurrentUser() {
   }
 
   const clerkUser = await currentUser();
-  const primaryEmail =
-    clerkUser?.emailAddresses.find(
-      (email) => email.id === clerkUser.primaryEmailAddressId,
-    )?.emailAddress ??
-    clerkUser?.emailAddresses[0]?.emailAddress ??
-    `${userId}@clerk.local`;
+  if (!clerkUser) {
+    throw new Error("Authenticated Clerk user could not be loaded.");
+  }
+
+  const primaryEmail = clerkUser.emailAddresses.find(
+    (email) => email.id === clerkUser.primaryEmailAddressId,
+  )?.emailAddress;
+  if (!primaryEmail) {
+    throw new Error(`Missing Clerk primary email for user ${userId}.`);
+  }
 
   const fullName =
-    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ") ||
-    clerkUser?.username ||
+    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") ||
+    clerkUser.username ||
     null;
 
-  return prisma.user.upsert({
-    where: { clerkId: userId },
-    update: {
-      email: primaryEmail,
-      fullName,
-      avatarUrl: clerkUser?.imageUrl ?? null,
-    },
-    create: {
-      clerkId: userId,
-      email: primaryEmail,
-      fullName,
-      avatarUrl: clerkUser?.imageUrl ?? null,
-      experienceLevel: mapExperienceLevel(
-        clerkUser?.publicMetadata?.experienceLevel as string | undefined,
-      ),
-    },
+  return syncDbUserFromIdentity({
+    clerkId: userId,
+    email: primaryEmail,
+    fullName,
+    avatarUrl: clerkUser.imageUrl ?? null,
+    createExperienceLevel: mapExperienceLevel(
+      clerkUser.publicMetadata?.experienceLevel as string | undefined,
+    ),
+    source: "request",
   });
 }
 
