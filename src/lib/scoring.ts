@@ -1,5 +1,7 @@
 import compromise from "compromise";
-import natural from "natural";
+import { TfIdf } from "natural/lib/natural/tfidf";
+import { WordTokenizer } from "natural/lib/natural/tokenizers";
+import { stopwords } from "natural/lib/natural/util";
 
 import type {
   DeterministicAnalysis,
@@ -9,8 +11,8 @@ import type {
 } from "@/types/analysis";
 import { clamp, toTitleCase } from "@/lib/utils";
 
-const tokenizer = new natural.WordTokenizer();
-const stopWords = new Set(natural.stopwords);
+const tokenizer = new WordTokenizer();
+const stopWords = new Set(stopwords);
 
 const SKILL_LEXICON = [
   "react",
@@ -122,7 +124,7 @@ export function extractSkillsFromText(text: string) {
 }
 
 function extractTopKeywords(resumeText: string, jobText: string, limit = 25) {
-  const tfidf = new natural.TfIdf();
+  const tfidf = new TfIdf();
   tfidf.addDocument(tokenize(resumeText));
   tfidf.addDocument(tokenize(jobText));
 

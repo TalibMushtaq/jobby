@@ -11,7 +11,7 @@ import {
 
 import { runQuickAnalysisAction } from "@/actions/analysis";
 import { SubmitButton } from "@/components/form/submit-button";
-import { DashboardCharts } from "@/components/dashboard/charts";
+import { DashboardChartsDeferred } from "@/components/dashboard/dashboard-charts-deferred";
 import { RiskBadge } from "@/components/dashboard/risk-badge";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -330,7 +330,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <DashboardCharts
+      <DashboardChartsDeferred
         trendData={trendData}
         skillTrendData={skillTrendData}
         atsBreakdownData={atsBreakdownData}
