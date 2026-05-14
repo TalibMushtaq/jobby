@@ -9,11 +9,12 @@ Jobby is a production-style AI hiring intelligence platform built with Next.js A
 - Clerk authentication
 - Prisma ORM + PostgreSQL (Neon/Supabase compatible)
 - UploadThing storage for resume files
-- OpenRouter (`openai/gpt-oss-20b:free`)
+- OpenRouter (`openrouter/free`)
 - NLP libraries: `natural`, `compromise`, `pdf-parse`, `mammoth`
 
 ## Features
 
+- **Detailed Analysis & Reasoning:** [See System Design & Logic](./SYSTEM_DESIGN.md)
 - Secure sign-up/sign-in/sign-out and protected dashboard routes
 - Profile system (name, skills, education, experience, preferred roles)
 - Resume library with PDF/DOCX upload, extracted text persistence, and default resume
@@ -37,7 +38,7 @@ cp .env.example .env
 - `CLERK_WEBHOOK_SIGNING_SECRET`
 - `UPLOADTHING_TOKEN`
 - `OPENROUTER_API_KEY`
-- `OPENROUTER_MODEL` (default: `openai/gpt-oss-20b:free`)
+- `OPENROUTER_MODEL` (default: `openrouter/free`)
 
 ## Setup
 
